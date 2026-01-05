@@ -1,0 +1,46 @@
+body{
+    color: #000;
+    background: #fff;
+    font-family: monospace;
+}
+
+code, pre{
+    background: #eee;
+    padding: 3px;
+}
+
+#readme{
+    padding: 1%;
+    font-family: sans-serif;
+}
+
+.c1, .c1t32, .c1t33, .c1t36, .c31, .c32, .c33, .c34, .c35, .c36 {font-weight:bold}
+.c4 {color:grey}
+.c1t32{color:blue}
+.c1t33{color:green}
+.c1t36{color:orange}
+.c31{color:red}
+.c32{color:orange}
+.c33{color:green}
+.c34{color:magenta}
+.c35{color:blue}
+.c36{color:cyan}
+
+table th {
+    text-align: left;
+}
+tr:hover td {
+}
+.dir{
+    color:#888;
+}
+
+table td > a {
+    text-decoration: none;
+    display: inline-block;
+    width: 100%;
+}
+
+table td > a:hover {
+    background: #eee;
+}
