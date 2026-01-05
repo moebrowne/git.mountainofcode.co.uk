@@ -8,7 +8,7 @@ function e(string $string): string
 }
 
 $repoPaths = array_filter(
-    glob(__DIR__ . '/../../*', GLOB_ONLYDIR),
+    glob(__DIR__ . '/../repos/*', GLOB_ONLYDIR),
     fn (string $repoPath): bool => is_dir($repoPath . '/.git'),
 );
 

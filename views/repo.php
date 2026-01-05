@@ -7,7 +7,7 @@ function e(string $string): string
     return htmlentities($string, ENT_QUOTES, 'UTF-8');
 }
 
-$reposPath = __DIR__ . '/../../';
+$reposPath = __DIR__ . '/../repos';
 
 $repoPaths = glob($reposPath . '/*', GLOB_ONLYDIR);
 
