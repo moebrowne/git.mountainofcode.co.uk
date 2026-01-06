@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
+define('REPOS_PATH', getenv('REPOS_PATH') ?: __DIR__ . '/../repos');
+
 function e(string $string): string
 {
     return htmlentities($string, ENT_QUOTES, 'UTF-8');
 }
 
-$reposPath = __DIR__ . '/../repos';
-
-$repoPaths = glob($reposPath . '/*', GLOB_ONLYDIR);
+$repoPaths = glob(REPOS_PATH . '/*', GLOB_ONLYDIR);
 
 $repoName = array_find(
     array_map(basename(...), $repoPaths),
@@ -22,7 +22,7 @@ if ($repoName === null) {
     die();
 }
 
-$repoPath = $reposPath . '/' . $repoName;
+$repoPath = REPOS_PATH . '/' . $repoName;
 
 $branches = shell_exec('git --git-dir=' . escapeshellarg($repoPath . '/.git') . ' for-each-ref --format="%(refname:short) (%(committerdate:iso))" refs/heads 2>&1');
 $filePaths = shell_exec('git --git-dir=' . escapeshellarg($repoPath . '/.git') . ' -c core.quotePath=false ls-tree --full-tree --name-only -r HEAD');

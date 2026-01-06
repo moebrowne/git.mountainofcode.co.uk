@@ -2,13 +2,15 @@
 
 declare(strict_types=1);
 
+define('REPOS_PATH', getenv('REPOS_PATH') ?: __DIR__ . '/../repos');
+
 function e(string $string): string
 {
     return htmlentities($string, ENT_QUOTES, 'UTF-8');
 }
 
 $repoPaths = array_filter(
-    glob(__DIR__ . '/../repos/*', GLOB_ONLYDIR),
+    glob(REPOS_PATH . '/*', GLOB_ONLYDIR),
     fn (string $repoPath): bool => is_dir($repoPath . '/.git'),
 );
 
