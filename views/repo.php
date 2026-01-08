@@ -24,9 +24,9 @@ if ($repoName === null) {
 
 $repoPath = REPOS_PATH . '/' . $repoName;
 
-$branches = shell_exec('git --git-dir=' . escapeshellarg($repoPath . '/.git') . ' for-each-ref --format="%(refname:short) (%(committerdate:iso))" refs/heads 2>&1');
-$filePaths = shell_exec('git --git-dir=' . escapeshellarg($repoPath . '/.git') . ' -c core.quotePath=false ls-tree --full-tree --name-only -r HEAD');
-$readme = shell_exec('git --git-dir=' . escapeshellarg($repoPath . '/.git') . ' show HEAD:README.md', );
+$branches = shell_exec('git --git-dir=' . escapeshellarg($repoPath) . ' for-each-ref --format="%(refname:short) (%(committerdate:iso))" refs/heads 2>&1');
+$filePaths = shell_exec('git --git-dir=' . escapeshellarg($repoPath) . ' -c core.quotePath=false ls-tree --full-tree --name-only -r HEAD');
+$readme = shell_exec('git --git-dir=' . escapeshellarg($repoPath) . ' show HEAD:README.md', );
 
 $filePaths = $filePaths === null ? [] : explode("\n", trim($filePaths));
 usort(
@@ -40,18 +40,18 @@ $branches = $branches === null ? [] : explode("\n", trim($branches));
 if (str_starts_with($_SERVER['REQUEST_URI'], '/' . $repoName . '.git')) {
     $filePath = str_replace('/' . $repoName . '.git/', '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 
-    if (str_starts_with(realpath($repoPath . '/.git/' . $filePath), realpath($repoPath . '/.git')) === false) {
-        header('HTTP/1.0 400 Bad Request');
-        exit;
-    }
-
-    if (file_exists($repoPath . '/.git/' . $filePath) === false) {
+    if (file_exists($repoPath . '/' . $filePath) === false) {
         header('HTTP/1.0 404 Not Found');
         echo '404';
         exit;
     }
 
-    readfile($repoPath . '/.git/' . $filePath);
+    if (str_starts_with(realpath($repoPath . '/' . $filePath), realpath($repoPath)) === false) {
+        header('HTTP/1.0 400 Bad Request');
+        exit;
+    }
+
+    readfile($repoPath . '/' . $filePath);
     die();
 }
 
@@ -76,7 +76,7 @@ if (str_starts_with($_SERVER['REQUEST_URI'], '/' . $repoName . '/file/')) {
         default => header('Content-Type: text/plain'),
     };
 
-    echo shell_exec('git --git-dir=' . escapeshellarg($repoPath . '/.git') . ' show ' . escapeshellarg('HEAD:' . $filePath));
+    echo shell_exec('git --git-dir=' . escapeshellarg($repoPath) . ' show ' . escapeshellarg('HEAD:' . $filePath));
     die();
 }
 

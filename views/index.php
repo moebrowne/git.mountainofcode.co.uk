@@ -9,10 +9,7 @@ function e(string $string): string
     return htmlentities($string, ENT_QUOTES, 'UTF-8');
 }
 
-$repoPaths = array_filter(
-    glob(REPOS_PATH . '/*', GLOB_ONLYDIR),
-    fn (string $repoPath): bool => is_dir($repoPath . '/.git'),
-);
+$repoPaths = glob(REPOS_PATH . '/*', GLOB_ONLYDIR);
 
 ?>
 <!doctype html>
@@ -44,7 +41,7 @@ $repoPaths = array_filter(
                 </a>
             </td>
             <td style="text-align: right">
-                <?php $date = shell_exec('git --git-dir=' . escapeshellarg($repoPath . '/.git') . ' log -1 --format=%ci'); ?>
+                <?php $date = shell_exec('git --git-dir=' . escapeshellarg($repoPath) . ' log -1 --format=%ci'); ?>
                 <?php if ($date === null) : ?>
                     <em>no commits</em>
                 <?php else : ?>
