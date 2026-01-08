@@ -28,7 +28,7 @@ $branches = shell_exec('git --git-dir=' . escapeshellarg($repoPath) . ' for-each
 $filePaths = shell_exec('git --git-dir=' . escapeshellarg($repoPath) . ' -c core.quotePath=false ls-tree --full-tree --name-only -r HEAD');
 $readme = shell_exec('git --git-dir=' . escapeshellarg($repoPath) . ' show HEAD:README.md', );
 
-$filePaths = $filePaths === null ? [] : explode("\n", trim($filePaths));
+$filePaths = is_array($filePaths) === false ? [] : explode("\n", trim($filePaths));
 usort(
     $filePaths,
     function(string $filePathA, string $filePathB): int {
