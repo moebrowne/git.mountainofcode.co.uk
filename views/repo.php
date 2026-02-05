@@ -142,7 +142,9 @@ if (str_starts_with($_SERVER['REQUEST_URI'], '/' . $repoName . '/file/')) {
     </div>
 
     <div>
-        <pre id="readme" style="text-wrap: auto"><?= $readme ?></pre>
+        <?php if ($readme !== null) : ?>
+            <pre id="readme" style="text-wrap: auto"><?= $readme ?></pre>
+        <?php endif; ?>
     </div>
 </div>
 </body>
