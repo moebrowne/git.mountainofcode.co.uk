@@ -28,6 +28,14 @@ $branches = shell_exec('git --git-dir=' . escapeshellarg($repoPath) . ' for-each
 $filePaths = shell_exec('git --git-dir=' . escapeshellarg($repoPath) . ' -c core.quotePath=false ls-tree --full-tree --name-only -r HEAD');
 $readme = shell_exec('git --git-dir=' . escapeshellarg($repoPath) . ' show HEAD:README.md', );
 
+if ($readme !== null) {
+    $readme = e($readme);
+    $readme = preg_replace('/!\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/', '<img src="$2" alt="$1">', $readme);
+    $readme = preg_replace('/!\[([^\]]*)\]\(([^\)]+)\)/', '<img src="' . $_SERVER['REQUEST_URI'] . '/file/$2" alt="$1">', $readme);
+    $readme = preg_replace('/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/', '<a href="$2">$1</a>', $readme);
+    $readme = preg_replace('/\[([^\]]+)\]\(([^\)]+)\)/', '<a href="' . $_SERVER['REQUEST_URI'] . '/file/$2">$1</a>', $readme);
+}
+
 $filePaths = is_string($filePaths) === false ? [] : explode("\n", trim($filePaths));
 usort(
     $filePaths,
@@ -134,7 +142,7 @@ if (str_starts_with($_SERVER['REQUEST_URI'], '/' . $repoName . '/file/')) {
     </div>
 
     <div>
-        <pre id="readme" style="text-wrap: auto"><?= e($readme ?? '') ?></pre>
+        <pre id="readme" style="text-wrap: auto"><?= $readme ?></pre>
     </div>
 </div>
 </body>

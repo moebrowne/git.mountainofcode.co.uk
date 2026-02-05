@@ -14,6 +14,10 @@ code, pre{
     font-family: sans-serif;
 }
 
+#readme img {
+    max-width: 100%;
+}
+
 .c1, .c1t32, .c1t33, .c1t36, .c31, .c32, .c33, .c34, .c35, .c36 {font-weight:bold}
 .c4 {color:grey}
 .c1t32{color:blue}
