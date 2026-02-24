@@ -29,6 +29,7 @@ $filePaths = shell_exec('git --git-dir=' . escapeshellarg($repoPath) . ' -c core
 $readme = shell_exec('git --git-dir=' . escapeshellarg($repoPath) . ' show HEAD:README.md', );
 
 if ($readme !== null) {
+    $readme = preg_replace('/<(https?:\/\/[^>]+)>/', '[$1]($1)', $readme);
     $readme = e($readme);
     $readme = preg_replace('/!\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/', '<img src="$2" alt="$1">', $readme);
     $readme = preg_replace('/!\[([^\]]*)\]\(([^\)]+)\)/', '<img src="' . $_SERVER['REQUEST_URI'] . '/file/$2" alt="$1">', $readme);
