@@ -36,8 +36,8 @@ $repoPaths = glob(REPOS_PATH . '/*', GLOB_ONLYDIR);
     <?php foreach ($repoPaths as $repoPath) : ?>
         <tr>
             <td>
-                <a href="/<?= e(basename($repoPath)); ?>">
-                    <?= e(basename($repoPath)) ?>
+                <a href="/<?= e(substr(basename($repoPath), 0, -4)); ?>">
+                    <?= e(substr(basename($repoPath), 0, -4)) ?>
                 </a>
             </td>
             <td style="text-align: right">

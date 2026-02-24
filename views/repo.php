@@ -12,7 +12,7 @@ function e(string $string): string
 $repoPaths = glob(REPOS_PATH . '/*', GLOB_ONLYDIR);
 
 $repoName = array_find(
-    array_map(basename(...), $repoPaths),
+    array_map(fn (string $repoPath): string => substr(basename($repoPath), 0, -4), $repoPaths),
     fn (string $name): bool => preg_match('#^/' . preg_quote($name) . '(/|\.git|$)#', $_SERVER['REQUEST_URI']) === 1,
 );
 
@@ -22,7 +22,7 @@ if ($repoName === null) {
     die();
 }
 
-$repoPath = REPOS_PATH . '/' . $repoName;
+$repoPath = REPOS_PATH . '/' . $repoName . '.git';
 
 $branches = shell_exec('git --git-dir=' . escapeshellarg($repoPath) . ' for-each-ref --format="%(refname:short) (%(committerdate:iso))" refs/heads 2>&1');
 $filePaths = shell_exec('git --git-dir=' . escapeshellarg($repoPath) . ' -c core.quotePath=false ls-tree --full-tree --name-only -r HEAD');
