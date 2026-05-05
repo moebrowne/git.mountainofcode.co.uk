@@ -89,6 +89,12 @@ if (str_starts_with($_SERVER['REQUEST_URI'], '/' . $repoName . '/file/')) {
     die();
 }
 
+if ($_SERVER['REQUEST_URI'] !== '/' . $repoName) {
+    header('HTTP/1.0 404 Not Found');
+    echo '404';
+    die();
+}
+
 ?>
 <!doctype html>
 <html lang="en">
