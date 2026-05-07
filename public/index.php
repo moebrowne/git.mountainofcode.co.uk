@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-$path = $_SERVER['REQUEST_URI'];
+$path = urldecode($_SERVER['REQUEST_URI']);
 
 // Remove trailing slashes
 if ($path !== rtrim($path, '/') && $path !== '/') {

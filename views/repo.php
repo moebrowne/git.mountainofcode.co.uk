@@ -10,10 +10,11 @@ function e(string $string): string
 }
 
 $repoPaths = glob(REPOS_PATH . '/*', GLOB_ONLYDIR);
+$requestUri = urldecode($_SERVER['REQUEST_URI']);
 
 $repoName = array_find(
     array_map(fn (string $repoPath): string => substr(basename($repoPath), 0, -4), $repoPaths),
-    fn (string $name): bool => preg_match('#^/' . preg_quote($name) . '(/|\.git|$)#', $_SERVER['REQUEST_URI']) === 1,
+    fn (string $name): bool => preg_match('#^/' . preg_quote($name) . '(/|\.git|$)#', $requestUri) === 1,
 );
 
 if ($repoName === null) {
@@ -32,9 +33,9 @@ if ($readme !== null) {
     $readme = preg_replace('/<(https?:\/\/[^>]+)>/', '[$1]($1)', $readme);
     $readme = e($readme);
     $readme = preg_replace('/!\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/', '<img src="$2" alt="$1">', $readme);
-    $readme = preg_replace('/!\[([^\]]*)\]\(([^\)]+)\)/', '<img src="' . $_SERVER['REQUEST_URI'] . '/file/$2" alt="$1">', $readme);
+    $readme = preg_replace('/!\[([^\]]*)\]\(([^\)]+)\)/', '<img src="' . $requestUri . '/file/$2" alt="$1">', $readme);
     $readme = preg_replace('/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/', '<a href="$2">$1</a>', $readme);
-    $readme = preg_replace('/\[([^\]]+)\]\(([^\)]+)\)/', '<a href="' . $_SERVER['REQUEST_URI'] . '/file/$2">$1</a>', $readme);
+    $readme = preg_replace('/\[([^\]]+)\]\(([^\)]+)\)/', '<a href="' . $requestUri . '/file/$2">$1</a>', $readme);
 }
 
 $filePaths = is_string($filePaths) === false ? [] : explode("\n", trim($filePaths));
@@ -46,8 +47,8 @@ usort(
 );
 $branches = $branches === null ? [] : explode("\n", trim($branches));
 
-if (str_starts_with($_SERVER['REQUEST_URI'], '/' . $repoName . '.git')) {
-    $filePath = str_replace('/' . $repoName . '.git/', '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+if (str_starts_with($requestUri, '/' . $repoName . '.git')) {
+    $filePath = str_replace('/' . $repoName . '.git/', '', parse_url($requestUri, PHP_URL_PATH));
 
     if (file_exists($repoPath . '/' . $filePath) === false) {
         header('HTTP/1.0 404 Not Found');
@@ -64,13 +65,14 @@ if (str_starts_with($_SERVER['REQUEST_URI'], '/' . $repoName . '.git')) {
     die();
 }
 
-if (str_starts_with($_SERVER['REQUEST_URI'], '/' . $repoName . '/file/')) {
+if (str_starts_with($requestUri, '/' . $repoName . '/file/')) {
     $filePath = array_find(
         $filePaths,
-        fn (string $path): bool => $_SERVER['REQUEST_URI'] === '/' . $repoName . '/file/' . $path
+        fn (string $path): bool => $requestUri === '/' . $repoName . '/file/' . $path
     );
 
     if ($filePath === null) {
+        var_dump(1);
         header('HTTP/1.0 404 Not Found');
         echo '404';
         die();
@@ -89,7 +91,7 @@ if (str_starts_with($_SERVER['REQUEST_URI'], '/' . $repoName . '/file/')) {
     die();
 }
 
-if ($_SERVER['REQUEST_URI'] !== '/' . $repoName) {
+if ($requestUri !== '/' . $repoName) {
     header('HTTP/1.0 404 Not Found');
     echo '404';
     die();
