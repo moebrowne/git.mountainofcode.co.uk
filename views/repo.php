@@ -25,28 +25,6 @@ if ($repoName === null) {
 
 $repoPath = REPOS_PATH . '/' . $repoName . '.git';
 
-$branches = shell_exec('git --git-dir=' . escapeshellarg($repoPath) . ' for-each-ref --format="%(refname:short) (%(committerdate:iso))" refs/heads 2>&1');
-$filePaths = shell_exec('git --git-dir=' . escapeshellarg($repoPath) . ' -c core.quotePath=false ls-tree --full-tree --name-only -r HEAD');
-$readme = shell_exec('git --git-dir=' . escapeshellarg($repoPath) . ' show HEAD:README.md', );
-
-if ($readme !== null) {
-    $readme = preg_replace('/<(https?:\/\/[^>]+)>/', '[$1]($1)', $readme);
-    $readme = e($readme);
-    $readme = preg_replace('/!\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/', '<img src="$2" alt="$1">', $readme);
-    $readme = preg_replace('/!\[([^\]]*)\]\(([^\)]+)\)/', '<img src="' . $requestUri . '/file/$2" alt="$1">', $readme);
-    $readme = preg_replace('/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/', '<a href="$2">$1</a>', $readme);
-    $readme = preg_replace('/\[([^\]]+)\]\(([^\)]+)\)/', '<a href="' . $requestUri . '/file/$2">$1</a>', $readme);
-}
-
-$filePaths = is_string($filePaths) === false ? [] : explode("\n", trim($filePaths));
-usort(
-    $filePaths,
-    function(string $filePathA, string $filePathB): int {
-        return str_contains($filePathB, '/') <=> str_contains($filePathA, '/') ?: strcmp($filePathA, $filePathB);
-    },
-);
-$branches = $branches === null ? [] : explode("\n", trim($branches));
-
 if (str_starts_with($requestUri, '/' . $repoName . '.git')) {
     $filePath = str_replace('/' . $repoName . '.git/', '', parse_url($requestUri, PHP_URL_PATH));
 
@@ -64,6 +42,15 @@ if (str_starts_with($requestUri, '/' . $repoName . '.git')) {
     readfile($repoPath . '/' . $filePath);
     die();
 }
+
+$filePaths = shell_exec('git --git-dir=' . escapeshellarg($repoPath) . ' -c core.quotePath=false ls-tree --full-tree --name-only -r HEAD');
+$filePaths = is_string($filePaths) === false ? [] : explode("\n", trim($filePaths));
+usort(
+        $filePaths,
+        function(string $filePathA, string $filePathB): int {
+            return str_contains($filePathB, '/') <=> str_contains($filePathA, '/') ?: strcmp($filePathA, $filePathB);
+        },
+);
 
 if (str_starts_with($requestUri, '/' . $repoName . '/file/')) {
     $filePath = array_find(
@@ -95,6 +82,19 @@ if ($requestUri !== '/' . $repoName) {
     header('HTTP/1.0 404 Not Found');
     echo '404';
     die();
+}
+
+$branches = shell_exec('git --git-dir=' . escapeshellarg($repoPath) . ' for-each-ref --format="%(refname:short) (%(committerdate:iso))" refs/heads 2>&1');
+$branches = $branches === null ? [] : explode("\n", trim($branches));
+
+$readme = shell_exec('git --git-dir=' . escapeshellarg($repoPath) . ' show HEAD:README.md', );
+if ($readme !== null) {
+    $readme = preg_replace('/<(https?:\/\/[^>]+)>/', '[$1]($1)', $readme);
+    $readme = e($readme);
+    $readme = preg_replace('/!\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/', '<img src="$2" alt="$1">', $readme);
+    $readme = preg_replace('/!\[([^\]]*)\]\(([^\)]+)\)/', '<img src="' . $requestUri . '/file/$2" alt="$1">', $readme);
+    $readme = preg_replace('/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/', '<a href="$2">$1</a>', $readme);
+    $readme = preg_replace('/\[([^\]]+)\]\(([^\)]+)\)/', '<a href="' . $requestUri . '/file/$2">$1</a>', $readme);
 }
 
 ?>
